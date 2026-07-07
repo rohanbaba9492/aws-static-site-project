@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head><title>My AWS Project</title></head>
+<body>
+  <h1>Hello from S3!</h1>
+  <p>This site is hosted on AWS S3.</p>
+
+  <h2>Contact Me</h2>
+  <form id="contactForm">
+    <input type="text" id="name" placeholder="Your name" required><br><br>
+    <input type="email" id="email" placeholder="Your email" required><br><br>
+    <textarea id="message" placeholder="Your message" required></textarea><br><br>
+    <button type="submit">Send</button>
+  </form>
+  <p id="formStatus"></p>
+
+  <script>
+  document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const status = document.getElementById('formStatus');
+    status.textContent = 'Sending...';
+
+    try {
+      const res = await fetch('https://un4h82dm67.execute-api.us-east-1.amazonaws.com/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          message: document.getElementById('message').value
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        status.textContent = 'Message sent! Thank you.';
+        document.getElementById('contactForm').reset();
+      } else {
+        status.textContent = 'Error: ' + (data.error || 'please try again');
+      }
+    } catch (err) {
+      status.textContent = 'Network error — please try again.';
+    }
+  });
+  </script>
+</body>
+</html>
